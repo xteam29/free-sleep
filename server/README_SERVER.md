@@ -12,10 +12,6 @@ Express server intended to run on the 8 sleep pod.
   - Scheduling temperature changes
   - Alarm scheduling - (work in progress, NOT COMPLETE)
 
-## Known Limitations
-- The server assumes a local network connection to the device.
-- No authentication is implemented.
-
 ---
 
 ## Architecture

@@ -4,9 +4,19 @@
 - Allows complete control of device WITHOUT requiring internet access. If you lose internet, your pod WILL NOT turn off, it will continue working! You can completely block WAN internet access if you'd like too. (I blocked all internet access from my pod on my router...)
 - WARNING: This will bypass blocked devices, please use responsibly.
 - Dynamic temperature control with real-time updates.
-- Schedule management: Set power on/off times and temperature adjustments.
-- Settings customization: Configure timezones, away mode, and priming schedules.
+- Schedule management: 
+  - Set power on/off times 
+  - Schedule temperature adjustments.
+  - Schedule daily time to prime the pod
+  - Alarms (WORK IN PROGRESS)
+- Settings customization: Configure timezones, away mode
 - Responsive design for desktop and mobile.
+
+## Known Limitations
+- Requires your device to be on the same Wi-Fi as the pod
+- No authentication is implemented
+- Does not have sleep statistics available (like HRV, hear rate, REM time, snore time, etc.)
+  - (I'm happy to take a look at adding that if someone can help find where that's stored)
 
 --- 
 
