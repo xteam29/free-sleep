@@ -1,0 +1,49 @@
+import { executeFunction } from '../../8sleep/deviceApi.js';
+import logger from '../../logger.js';
+import settingsDB from '../../db/settings.js';
+const calculateLevelFromF = (temperatureF) => {
+    const level = (temperatureF - 82.5) / 27.5 * 100;
+    return Math.round(level).toString();
+};
+const updateSide = async (side, sideStatus) => {
+    await settingsDB.read();
+    const settings = settingsDB.data;
+    const controlBothSides = settings.left.awayMode || settings.right.awayMode;
+    const updateLeft = side === 'left' || controlBothSides;
+    const updateRight = side === 'right' || controlBothSides;
+    const { isOn, targetTemperatureF, secondsRemaining } = sideStatus;
+    if (controlBothSides) {
+        logger.debug('One side is in away mode, updating both sides...');
+    }
+    if (isOn !== undefined) {
+        const onDuration = isOn ? '43200' : '0';
+        if (updateLeft)
+            await executeFunction('LEFT_TEMP_DURATION', onDuration);
+        if (updateRight)
+            await executeFunction('RIGHT_TEMP_DURATION', onDuration);
+    }
+    if (targetTemperatureF) {
+        const level = calculateLevelFromF(targetTemperatureF);
+        if (updateLeft)
+            await executeFunction('TEMP_LEVEL_LEFT', level);
+        if (updateRight)
+            await executeFunction('TEMP_LEVEL_RIGHT', level);
+    }
+    if (secondsRemaining) {
+        const seconds = Math.round(secondsRemaining).toString();
+        if (updateLeft)
+            await executeFunction('LEFT_TEMP_DURATION', seconds);
+        if (updateRight)
+            await executeFunction('RIGHT_TEMP_DURATION', seconds);
+    }
+};
+export const updateDeviceStatus = async (deviceStatus) => {
+    logger.info(`Updating deviceStatus...`);
+    if (deviceStatus.isPriming)
+        await executeFunction('PRIME');
+    if (deviceStatus?.left)
+        await updateSide('left', deviceStatus.left);
+    if (deviceStatus?.right)
+        await updateSide('right', deviceStatus.right);
+    logger.info('Finished updating device status');
+};
