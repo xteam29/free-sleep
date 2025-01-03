@@ -16,3 +16,4 @@ tmp
 
 server/lowdb/*
 !.gitkeep
+app/dist/
