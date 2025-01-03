@@ -1,0 +1,13 @@
+.Slider {
+  svg {
+    height: 250px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.Disabled {
+  pointer-events: none;
+}
