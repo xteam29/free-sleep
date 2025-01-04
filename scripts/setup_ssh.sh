@@ -2,36 +2,52 @@
 
 # Shell script to set up sshd as a systemd service and configure sshd_config
 
+echo "This script will:"
+echo "- Replace the existing ssh config at /etc/ssh/sshd_config"
+echo "- Setup the ssh service to auto run at boot"
+echo "- Remove the default authorized ssh keys the /etc/ssh/authorized_keys"
+echo "- Prompt you to add your public ssh key"
+echo "Press Enter to continue or Ctrl+C to quit..."
+
+read -r
+
 SERVICE_FILE="/etc/systemd/system/sshd.service"
 SSHD_CONFIG_FILE="/etc/ssh/sshd_config"
-AUTHORIZED_KEYS_FILE="/root/.ssh/authorized_keys"
+AUTHORIZED_KEYS_FILE="/etc/ssh/authorized_keys"
 
 echo "Creating new sshd_config at $SSHD_CONFIG_FILE..."
 rm "$SSHD_CONFIG_FILE"
 
 cat > "$SSHD_CONFIG_FILE" <<EOF
-# TEST
-Port 8822
-ListenAddress 0.0.0.0
 AllowUsers root rewt
-PermitTTY yes
-PermitRootLogin yes
-PubkeyAuthentication yes
 AuthorizedKeysFile /etc/ssh/authorized_keys
-PermitRootLogin yes
-AuthorizedKeysFile /etc/ssh/authorized_keys .ssh/authorized_keys
-PasswordAuthentication yes
 ChallengeResponseAuthentication no
-UsePAM yes
-Compression no
-ClientAliveInterval 15
 ClientAliveCountMax 4
+ClientAliveInterval 15
+Compression no
+ListenAddress 0.0.0.0
+PasswordAuthentication yes
+PermitRootLogin yes
+PermitTTY yes
+Port 8822
+PubkeyAuthentication yes
 Subsystem	sftp	/usr/libexec/sftp-server
+UsePAM yes
 EOF
 
 echo "Setting correct permissions for $SSHD_CONFIG_FILE..."
 chmod 600 "$SSHD_CONFIG_FILE"
 chown root:root "$SSHD_CONFIG_FILE"
+
+echo "Removing existing authorized_keys..."
+rm "$AUTHORIZED_KEYS_FILE"
+
+read -p "Please paste your SSH public key below and press Enter" ssh_key
+echo "$ssh_key" >> "$AUTHORIZED_KEYS_FILE"
+
+chmod 644 "$AUTHORIZED_KEYS_FILE"
+chown root:root "$AUTHORIZED_KEYS_FILE"
+
 
 echo "Creating systemd service file for sshd at $SERVICE_FILE..."
 
@@ -63,21 +79,3 @@ systemctl status sshd.service --no-pager
 echo ""
 echo "SSH service setup complete!"
 echo ""
-
-echo "Next Steps: Update authorized_keys with your public key."
-echo "---------------------------------------------------------"
-echo "1. Remove the existing authorized_keys file:"
-echo "   rm -f $AUTHORIZED_KEYS_FILE"
-echo ""
-echo "2. Create a new authorized_keys file:"
-echo "   vi $AUTHORIZED_KEYS_FILE"
-echo ""
-echo "3. Paste your public key into the file (one key per line)."
-echo ""
-echo "4. Set the correct permissions:"
-echo "   chmod 600 $AUTHORIZED_KEYS_FILE"
-echo "   chown root:root $AUTHORIZED_KEYS_FILE"
-echo ""
-echo "Once done, you should be able to log in using your SSH key."
-echo "Test your access with:"
-echo "   ssh root@<device-ip> -p 8822"

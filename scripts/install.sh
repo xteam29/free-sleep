@@ -58,5 +58,9 @@ systemctl start free-sleep.service
 echo "Checking service status..."
 systemctl status free-sleep.service --no-pager
 
+# Sometimes the device time gets reset to 2010, this resets the device time
+echo "Updating device time"
+date -s "$(curl -s --head http://google.com | grep ^Date: | sed 's/Date: //g')"
+
 echo "Installation complete! The Free Sleep server is running and will start automatically on boot."
 echo "See free-sleep logs with `journalctl -u free-sleep.service`"

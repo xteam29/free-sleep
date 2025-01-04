@@ -1,4 +1,8 @@
 # Free Sleep: 8 Sleep Manager
+## Tested and confirmed compatible devices
+Check the back of your pod where you plug in the water tubes, 
+- Pod 3 - FCC ID: 2AYXT61100001
+
 
 ## Features
 - Allows complete control of device WITHOUT requiring internet access. If you lose internet, your pod WILL NOT turn off, it will continue working! You can completely block WAN internet access if you'd like too. (I blocked all internet access from my pod on my router...)
