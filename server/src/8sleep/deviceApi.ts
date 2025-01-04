@@ -20,6 +20,8 @@ export const frankenCommands = {
   PRIME: '13',
   DEVICE_STATUS: '14',
   ALARM_CLEAR: '16',
+  // ALARM_SOLO: "17",
+  // STOP_PRIME: "18",
 } as const;
 
 

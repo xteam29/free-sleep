@@ -1,7 +1,6 @@
 # REQUIREMENTS
 ## Compatability
-Check the back of your pod where you plug in the water tubes,
-- Pod 3 - FCC ID: 2AYXT61100001
+- Pod 3 - FCC ID: 2AYXT61100001 (The FCC ID is located in the back of the pod where you plug in the water tubes)
 - Currently requires you to firmware reset your pod by holding the smaller button in the back of your pod when powering up. Your device should flash green
 
 
@@ -24,10 +23,16 @@ If you did it correctly, you'll see this
 ### 3.Modify the boot environment, this allows us to get root access
 
 ```
+# You should see current_slot=a IF you did a firmware reset prior
+printenv current_slot
+current_slot=a
+
 # If you have current_slot=a
 setenv bootargs "root=PARTLABEL=rootfs_a rootwait init=/bin/bash"
 
-# A bunch of text will popup on your screen, let it finish and you'll eventually see `bash-5.1# `
+# If you have current_slot=b
+setenv bootargs "root=PARTLABEL=rootfs_b rootwait init=/bin/bash"
+
 run bootcmd
 ```
 

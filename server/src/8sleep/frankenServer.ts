@@ -11,9 +11,7 @@ import { DeviceStatus } from '../routes/deviceStatus/deviceStatusSchema.js';
 import { loadDeviceStatus } from './loadDeviceStatus.js';
 import { wait } from './promises.js';
 
-// This must be hard coded, this was the original dac.sock path
-const SOCKET_PATH = process.platform === 'darwin' ? '/Users/ds/free-sleep/tmp/dac.sock' : '/deviceinfo/dac.sock';
-
+import config from '../config';
 
 export class Franken {
   public constructor(
@@ -93,7 +91,7 @@ class FrankenServer {
   }
 
   public static async start(path: string) {
-    logger.debug(`Creating franken server on socket: ${SOCKET_PATH}`);
+    logger.debug(`Creating franken server on socket: ${config.firmwareConfig.dacLocation}`);
     const unixSocketServer = await UnixSocketServer.start(path);
     return new FrankenServer(unixSocketServer);
   }
@@ -105,7 +103,7 @@ export async function getFrankenServer(): Promise<FrankenServer> {
   // If we've already started it, reuse:
   if (frankenServer) return frankenServer;
   // Otherwise, start a new instance once:
-  frankenServer = await FrankenServer.start(SOCKET_PATH);
+  frankenServer = await FrankenServer.start(config.firmwareConfig.dacLocation);
   logger.debug('FrankenServer started');
   return frankenServer;
 }

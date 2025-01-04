@@ -13,10 +13,12 @@ read -r
 
 SERVICE_FILE="/etc/systemd/system/sshd.service"
 SSHD_CONFIG_FILE="/etc/ssh/sshd_config"
+SSH_CONFIG_FILE="/etc/ssh/ssh_config"
 AUTHORIZED_KEYS_FILE="/etc/ssh/authorized_keys"
 
 echo "Creating new sshd_config at $SSHD_CONFIG_FILE..."
-rm "$SSHD_CONFIG_FILE"
+[ -f "$SSHD_CONFIG_FILE" ] && rm "$SSHD_CONFIG_FILE"
+[ -f "$SSH_CONFIG_FILE" ] && rm "$SSH_CONFIG_FILE"
 
 cat > "$SSHD_CONFIG_FILE" <<EOF
 AllowUsers root rewt
@@ -35,14 +37,19 @@ Subsystem	sftp	/usr/libexec/sftp-server
 UsePAM yes
 EOF
 
+cp "$SSHD_CONFIG_FILE" "$SSH_CONFIG_FILE"
+
 echo "Setting correct permissions for $SSHD_CONFIG_FILE..."
 chmod 600 "$SSHD_CONFIG_FILE"
 chown root:root "$SSHD_CONFIG_FILE"
+chmod 600 "$SSH_CONFIG_FILE"
+chown root:root "$SSH_CONFIG_FILE"
 
 echo "Removing existing authorized_keys..."
 rm "$AUTHORIZED_KEYS_FILE"
 
-read -p "Please paste your SSH public key below and press Enter" ssh_key
+echo "Please paste your SSH public key below and press Enter:"
+read ssh_key
 echo "$ssh_key" >> "$AUTHORIZED_KEYS_FILE"
 
 chmod 644 "$AUTHORIZED_KEYS_FILE"
@@ -64,6 +71,11 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
+mkdir -p /var/run/sshd
+chmod 0755 /var/run/sshd
+chown root:root /var/run/sshd
+
+
 echo "Reloading systemd daemon to apply the new service..."
 systemctl daemon-reload
 
@@ -76,6 +88,9 @@ systemctl start sshd.service
 echo "Checking sshd service status..."
 systemctl status sshd.service --no-pager
 
+
 echo ""
 echo "SSH service setup complete!"
+echo "SSH uses port 8822!"
+echo "SSH into your device with `ssh root@<IP> -p 8822`"
 echo ""
