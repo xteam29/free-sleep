@@ -1,4 +1,13 @@
 # Free Sleep: 8 Sleep Manager
+
+## WARNING
+This software is very new and may require troubleshooting debugging on your end. If you need help, you're welcome to reach out on github here.
+
+Installing this is not recommended if you're not comfortable with linux or programming.
+
+See disclaimer and license @ LICENSE.md
+
+
 ## Tested and confirmed compatible devices
 Check the back of your pod where you plug in the water tubes, 
 - Pod 3 - FCC ID: 2AYXT61100001
