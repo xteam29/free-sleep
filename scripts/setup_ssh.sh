@@ -14,7 +14,7 @@ read -r
 SERVICE_FILE="/etc/systemd/system/sshd.service"
 SSHD_CONFIG_FILE="/etc/ssh/sshd_config"
 SSH_CONFIG_FILE="/etc/ssh/ssh_config"
-AUTHORIZED_KEYS_FILE="/etc/ssh/authorized_keys"
+AUTHORIZED_KEYS_FILE="/home/root/ssh/authorized_keys"
 
 echo "Creating new sshd_config at $SSHD_CONFIG_FILE..."
 [ -f "$SSHD_CONFIG_FILE" ] && rm "$SSHD_CONFIG_FILE"
@@ -22,7 +22,7 @@ echo "Creating new sshd_config at $SSHD_CONFIG_FILE..."
 
 cat > "$SSHD_CONFIG_FILE" <<EOF
 AllowUsers root rewt
-AuthorizedKeysFile /etc/ssh/authorized_keys
+AuthorizedKeysFile $AUTHORIZED_KEYS_FILE
 ChallengeResponseAuthentication no
 ClientAliveCountMax 4
 ClientAliveInterval 15
@@ -46,7 +46,9 @@ chmod 600 "$SSH_CONFIG_FILE"
 chown root:root "$SSH_CONFIG_FILE"
 
 echo "Removing existing authorized_keys..."
-rm "$AUTHORIZED_KEYS_FILE"
+rm /etc/ssh/authorized_keys
+
+mkdir /home/root/ssh/
 
 echo "Please paste your SSH public key below and press Enter:"
 read ssh_key
