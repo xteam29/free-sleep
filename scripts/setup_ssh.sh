@@ -7,6 +7,7 @@ SSHD_CONFIG_FILE="/etc/ssh/sshd_config"
 AUTHORIZED_KEYS_FILE="/root/.ssh/authorized_keys"
 
 echo "Creating new sshd_config at $SSHD_CONFIG_FILE..."
+rm "$SSHD_CONFIG_FILE"
 
 cat > "$SSHD_CONFIG_FILE" <<EOF
 # TEST
@@ -69,7 +70,7 @@ echo "1. Remove the existing authorized_keys file:"
 echo "   rm -f $AUTHORIZED_KEYS_FILE"
 echo ""
 echo "2. Create a new authorized_keys file:"
-echo "   nano $AUTHORIZED_KEYS_FILE"
+echo "   vi $AUTHORIZED_KEYS_FILE"
 echo ""
 echo "3. Paste your public key into the file (one key per line)."
 echo ""

@@ -15,6 +15,9 @@ curl -L -o "$ZIP_FILE" "$REPO_URL"
 echo "Unzipping the repository..."
 unzip -o "$ZIP_FILE"
 
+echo "Removing the zip file..."
+rm "$ZIP_FILE"
+
 # Step 3: Move files to the installation directory
 echo "Setting up the installation directory..."
 mv free-sleep-main "$REPO_DIR"
@@ -56,3 +59,4 @@ echo "Checking service status..."
 systemctl status free-sleep.service --no-pager
 
 echo "Installation complete! The Free Sleep server is running and will start automatically on boot."
+echo "See free-sleep logs with `journalctl -u free-sleep.service`"
