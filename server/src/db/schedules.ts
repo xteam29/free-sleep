@@ -1,6 +1,7 @@
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import { DailySchedule, Schedules, SideSchedule } from './schedulesSchema.js';
+import config from '../config.js';
 
 const defaultDailySchedule: DailySchedule = {
   temperatures: {},
@@ -35,7 +36,7 @@ const defaultData: Schedules = {
   right: defaultSideSchedule,
 };
 
-const file = new JSONFile<Schedules>('./lowdb/schedulesDB.json');
+const file = new JSONFile<Schedules>(`${config.dbFolder}schedulesDB.json`);
 const schedulesDB = new Low<Schedules>(file, defaultData);
 await schedulesDB.read();
 await schedulesDB.write();

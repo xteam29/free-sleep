@@ -8,6 +8,7 @@ import './jobs/jobScheduler.js'
 // Setup code
 import setupMiddleware from './setup/middleware.js';
 import setupRoutes from './setup/routes.js';
+import config from './config.js';
 
 const port = 3000;
 const app = express();
@@ -46,7 +47,7 @@ async function gracefulShutdown(signal: string) {
       });
     }
 
-    if (process.platform !== 'darwin') {
+    if (!config.remoteDevMode) {
       const franken = await getFranken();
       const frankenServer = await getFrankenServer();
 
@@ -71,7 +72,7 @@ async function startServer() {
   setupRoutes(app);
 
   // Initialize Franken once before listening
-  if (process.platform !== 'darwin') await initFranken();
+  if (!config.remoteDevMode) await initFranken();
 
   // Listen on desired port
   server = app.listen(port, () => {

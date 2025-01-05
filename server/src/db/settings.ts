@@ -2,6 +2,7 @@ import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 
 import { Settings } from './settingsSchema.js';
+import config from '../config.js';
 
 
 const defaultData: Settings = {
@@ -18,7 +19,7 @@ const defaultData: Settings = {
   }
 };
 
-const file = new JSONFile<Settings>('./lowdb/settingsDB.json');
+const file = new JSONFile<Settings>(`${config.dbFolder}settingsDB.json`);
 const settingsDB = new Low<Settings>(file, defaultData);
 await settingsDB.read();
 await settingsDB.write();

@@ -5,6 +5,7 @@ import './jobs/jobScheduler.js';
 // Setup code
 import setupMiddleware from './setup/middleware.js';
 import setupRoutes from './setup/routes.js';
+import config from './config.js';
 const port = 3000;
 const app = express();
 let server;
@@ -36,7 +37,7 @@ async function gracefulShutdown(signal) {
                 logger.debug('Closed out remaining HTTP connections.');
             });
         }
-        if (process.platform !== 'darwin') {
+        if (!config.remoteDevMode) {
             const franken = await getFranken();
             const frankenServer = await getFrankenServer();
             // Close the Franken instance and server
@@ -57,7 +58,7 @@ async function startServer() {
     setupMiddleware(app);
     setupRoutes(app);
     // Initialize Franken once before listening
-    if (process.platform !== 'darwin')
+    if (!config.remoteDevMode)
         await initFranken();
     // Listen on desired port
     server = app.listen(port, () => {

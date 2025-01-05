@@ -1,5 +1,6 @@
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
+import config from '../config.js';
 const defaultData = {
     timeZone: null,
     left: {
@@ -13,7 +14,7 @@ const defaultData = {
         time: '14:00',
     }
 };
-const file = new JSONFile('./lowdb/settingsDB.json');
+const file = new JSONFile(`${config.dbFolder}settingsDB.json`);
 const settingsDB = new Low(file, defaultData);
 await settingsDB.read();
 await settingsDB.write();
