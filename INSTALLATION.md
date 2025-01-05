@@ -141,6 +141,19 @@ http://192.168.1.50:3000/
 ![Web App](docs/installation/4_web_app.png)
 
 
+### Known bugs
+- If you have firewall rules setup, sometimes the date gets out of sync, THIS WILL BREAK SCHEDULING. Fixing this is on my to-do list...
+```
+# Check your system date and time with this
+date
+
+# If it's not synced, you can fix it with (firewall rules must be off `iptables -F`)
+date -s "$(curl -s --head http://google.com | grep ^Date: | sed 's/Date: //g')"
+```
+
+
+## These last steps are optional
+
 ### 15. Add firewall rules to block access to the internet (optional, but recommended)
 ```
 sh /home/dac/free-sleep/scripts/block_internet_access.sh
@@ -149,7 +162,11 @@ sh /home/dac/free-sleep/scripts/block_internet_access.sh
 sh /home/dac/scripts/unblock_internet_access.sh
 ```
 
-
+### 16. Add an ssh config
+This will ask for a public key, ssh access is on port 8822 (ex: `ssh root@<POD_IP> -p 8822') 
+```
+sh /home/dac/free-sleep/scripts/setup_ssh.sh
+```
 
 
 
