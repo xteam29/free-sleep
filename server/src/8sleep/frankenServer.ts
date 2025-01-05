@@ -11,7 +11,7 @@ import { DeviceStatus } from '../routes/deviceStatus/deviceStatusSchema.js';
 import { loadDeviceStatus } from './loadDeviceStatus.js';
 import { wait } from './promises.js';
 
-import config from '../config';
+import config from '../config.js';
 
 export class Franken {
   public constructor(

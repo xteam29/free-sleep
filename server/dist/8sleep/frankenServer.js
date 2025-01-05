@@ -6,7 +6,7 @@ import { UnixSocketServer } from './unixSocketServer.js';
 import logger from '../logger.js';
 import { loadDeviceStatus } from './loadDeviceStatus.js';
 import { wait } from './promises.js';
-import config from '../config';
+import config from '../config.js';
 export class Franken {
     constructor(writeStream, messageStream, sequentialQueue, socket) {
         this.writeStream = writeStream;
