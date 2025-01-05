@@ -42,6 +42,7 @@ export default function (app: Express) {
       origin: (origin, callback) => {
         // Allow if origin is LAN IP or localhost
         if (
+          !origin ||
           origin?.startsWith(`http://${getLocalIp()}:`) ||
           origin?.startsWith('http://localhost') ||
           origin?.startsWith('http://192.168.') ||

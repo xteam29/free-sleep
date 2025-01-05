@@ -11,6 +11,7 @@ export default defineConfig({
   },
   build: {
     sourcemap: process.env.NODE_ENV === 'development',
+    outDir: '../server/public/',
     rollupOptions: {
       output: {
         entryFileNames: 'index.js', // Set the name for the JS entry file
