@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import BottomNavigation from '@mui/material/BottomNavigation';
@@ -31,9 +31,15 @@ export default function Navbar() {
   const { pathname } = useLocation();
   const { isUpdating, setSide } = useAppStore();
   const currentTitle = pages.find((page) => page.route === pathname)?.title;
+
   const [mobileNavValue, setMobileNavValue] = React.useState(
     pages.findIndex((page) => page.route === pathname)
   );
+
+  useEffect(() => {
+    const page = pages.find((page) => page.route === pathname)
+    if (page?.side) setSide(page.side);
+  }, [pathname]);
 
   // Handle navigation for both desktop and mobile
   const handleNavigation = (route: string, side: Side) => {
