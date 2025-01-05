@@ -1,9 +1,9 @@
 import { existsSync, mkdirSync } from 'fs';
-import logger from './logger';
+import logger from './logger.js';
 const FIRMWARE_MAP = {
     remoteDevMode: {
         deviceCrtFileCheck: '',
-        dacLocation: '~/free-sleep-database/.sock',
+        dacLocation: '~/free-sleep-database/dac.sock',
     },
     pod3FirmwareReset: {
         deviceCrtFileCheck: '/deviceinfo/device.key',
@@ -31,9 +31,6 @@ class Config {
             catch (error) {
                 console.error(`Failed to create folder: ${this.dbFolder}`, error);
             }
-        }
-        else {
-            console.log(`Folder already exists: ${this.dbFolder}`);
         }
     }
     detectFirmware() {
