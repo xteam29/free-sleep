@@ -6,8 +6,7 @@ import { UnixSocketServer } from './unixSocketServer.js';
 import logger from '../logger.js';
 import { loadDeviceStatus } from './loadDeviceStatus.js';
 import { wait } from './promises.js';
-// This must be hard coded, this was the original dac.sock path
-const SOCKET_PATH = process.platform === 'darwin' ? '/Users/ds/free-sleep/tmp/dac.sock' : '/deviceinfo/dac.sock';
+import config from '../config';
 export class Franken {
     constructor(writeStream, messageStream, sequentialQueue, socket) {
         this.writeStream = writeStream;
@@ -75,7 +74,7 @@ class FrankenServer {
         return Franken.fromSocket(socket);
     }
     static async start(path) {
-        logger.debug(`Creating franken server on socket: ${SOCKET_PATH}`);
+        logger.debug(`Creating franken server on socket: ${config.firmwareConfig.dacLocation}`);
         const unixSocketServer = await UnixSocketServer.start(path);
         return new FrankenServer(unixSocketServer);
     }
@@ -86,7 +85,7 @@ export async function getFrankenServer() {
     if (frankenServer)
         return frankenServer;
     // Otherwise, start a new instance once:
-    frankenServer = await FrankenServer.start(SOCKET_PATH);
+    frankenServer = await FrankenServer.start(config.firmwareConfig.dacLocation);
     logger.debug('FrankenServer started');
     return frankenServer;
 }

@@ -1,0 +1,35 @@
+import { existsSync } from 'fs';
+const FIRMWARE_MAP = {
+    pod3FirmwareReset: {
+        deviceCrtFileCheck: '/deviceinfo/device.key',
+        dacLocation: '/deviceinfo/dac.sock',
+    },
+    newFirmware: {
+        deviceCrtFileCheck: '/persistent/deviceinfo/device.key',
+        dacLocation: '/persistent/deviceinfo/dac.sock',
+    },
+};
+class Config {
+    constructor() {
+        this.firmwareVersion = this.detectFirmware();
+        this.firmwareConfig = FIRMWARE_MAP[this.firmwareVersion];
+    }
+    detectFirmware() {
+        // On the pod 3, after the device is firmware reset, the device.crt exists at /deviceinfo/dac.sock
+        if (existsSync(FIRMWARE_MAP.pod3FirmwareReset.deviceCrtFileCheck)) {
+            return 'pod3FirmwareReset';
+        }
+        else if (existsSync(FIRMWARE_MAP.newFirmware.deviceCrtFileCheck)) {
+            // On the pod 4 & pod 3 with latest firmware updates, the device.crt exists at /persistent/deviceinfo/dac.sock
+            return 'newFirmware';
+        }
+        throw new Error('Error - Did not detect device firmware');
+    }
+    static getInstance() {
+        if (!Config.instance) {
+            Config.instance = new Config();
+        }
+        return Config.instance;
+    }
+}
+export default Config.getInstance();

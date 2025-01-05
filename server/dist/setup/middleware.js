@@ -29,9 +29,20 @@ export default function (app) {
     app.use(express.json());
     // Allow local development
     app.use(cors({
-        origin: [
-            `http://${getLocalIp()}:3000`
-        ]
+        origin: (origin, callback) => {
+            // Allow if origin is LAN IP or localhost
+            if (!origin ||
+                origin?.startsWith(`http://${getLocalIp()}:`) ||
+                origin?.startsWith('http://localhost') ||
+                origin?.startsWith('http://192.168.') ||
+                origin?.startsWith('http://172.16.') ||
+                origin?.startsWith('http://10.0.')) {
+                callback(null, true);
+            }
+            else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        }
     }));
     // Logging
     app.use((req, res, next) => {
