@@ -9,6 +9,8 @@ import { postSettings, useSettings } from '@api/settings.ts';
 import { useAppStore } from '@state/appStore.tsx';
 import DailyPriming from './DailyPriming.tsx';
 import LicenseModal from './LicenseModal.tsx';
+import PrimeControl from './PrimeControl.tsx';
+
 
 export default function SettingsPage() {
   const { data: settings, refetch } = useSettings();
@@ -33,6 +35,7 @@ export default function SettingsPage() {
     <PageContainer>
       <TimeZoneSelector settings={settings} updateSettings={updateSettings}/>
       <DailyPriming settings={settings} updateSettings={updateSettings}/>
+      <PrimeControl />
       <Typography variant="h5">Left Side</Typography>
       <AwayModeSwitch side="left" settings={settings} updateSettings={updateSettings}/>
 
