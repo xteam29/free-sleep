@@ -7,6 +7,8 @@ Installing this is not recommended if you're not comfortable with linux or progr
 
 See disclaimer and license @ LICENSE.md
 
+## Is it reversible?
+As far as I can tell, it should be reversible by simply [resetting the firmware](docs/pod_teardown/10_firmware_reset.jpeg) on your device and setting it up as a new pod again. 
 
 ## Tested and confirmed compatible devices
 Check the back of your pod where you plug in the water tubes, 

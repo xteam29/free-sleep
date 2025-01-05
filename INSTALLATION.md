@@ -2,9 +2,15 @@
 ## Compatability
 - Pod 3 - FCC ID: 2AYXT61100001 (The FCC ID is located in the back of the pod where you plug in the water tubes)
 - Currently requires you to firmware reset your pod by holding the smaller button in the back of your pod when powering up. Your device should flash green
+- Pod 4
+
+## What to do if you want to undo everything and go back to the eight sleep app
+1. If you already had your pod added to your 8 sleep account in your app, go to your 8 sleep app and manage your pod, remove the pod from your account
+2. [Reset the firmware again as you did here](docs/pod_teardown/10_firmware_reset.jpeg)
+3. Set up the pod as a new pod in the app
 
 
-## 1. Connect to device
+### 1. Connect to device
 
 ```
 minicom -b 921600 -o -D /dev/tty.usbserial-B0010NHK
@@ -13,6 +19,7 @@ minicom -b 921600 -o -D /dev/tty.usbserial-B0010NHK
 ### 2. Interrupt uboot 
 
 You can just hit CTRL + C when you see `Hit any key to stop autoboot`
+
 ![Interrupt](docs/installation/1_interrupt.png)
 
 If you did it correctly, you'll see this 
@@ -23,15 +30,12 @@ If you did it correctly, you'll see this
 ### 3.Modify the boot environment, this allows us to get root access
 
 ```
-# You should see current_slot=a IF you did a firmware reset prior
+# VERIFY your current_slot = a, if not, go back and firmware reset your pod
+# If it's still not = a, create an issue in github 
 printenv current_slot
-current_slot=a
 
 # If you have current_slot=a
 setenv bootargs "root=PARTLABEL=rootfs_a rootwait init=/bin/bash"
-
-# If you have current_slot=b
-setenv bootargs "root=PARTLABEL=rootfs_b rootwait init=/bin/bash"
 
 run bootcmd
 ```
@@ -83,6 +87,7 @@ reboot -f
 
 ### 9. Disable software updates
 
+You may see some failures saying these services were not loaded or do not exist, that's ok
 ```
 # Disables the software updates
 systemctl disable --now swupdate-progress swupdate defibrillator eight-kernel telegraf vector frankenfirmware dac swupdate.socket
@@ -106,14 +111,20 @@ nmcli connection add type wifi con-name WIFI_NAME ifname wlan0 ssid WIFI_NAME wi
 nmcli connection reload
 ```
 
-### 11. Install the app
 
+### 11. FOR POD 4 USERS ONLY, POD 3 USERS SKIP THIS STEP
+Your firmware uses a different dac.sock path location, all you need to do is run this command. This tell the free-sleep app where to establish a dac.sock connection
+```
+echo '/home/dac/app/sewer/dac.sock' > /home/dac/dac_sock_path.txt
+```
+
+### 12. Install the free-sleep app, this will setup a systemctl service that auto runs on boot
 ```
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/throwaway31265/free-sleep/main/scripts/install.sh)"
 ```
 
 
-### 12. Get your pods IP address
+### 13. Get your pods IP address
 
 ```
 # Yours will be different, that's okay
@@ -121,16 +132,16 @@ nmcli -g ip4.address device show wlan0
 192.168.1.50/24
 ```
 
-### 13. With a device connected to the SAME Wi-Fi network, navigate to your pod's IP address (port 3000)
+### 14. With a device connected to the SAME Wi-Fi network, navigate to your pod's IP address (port 3000)
 
-SET YOUR TIME ZONE, OR ELSE SCHEDULING WILL NOT WORK!
+SET YOUR TIME ZONE, OR ELSE SCHEDULING WILL NOT WORK! This can be done on the settings page of the web app. See screenshot below
 
 http://192.168.1.50:3000/
 
 ![Web App](docs/installation/4_web_app.png)
 
 
-### 14. Add firewall rules to block access to the internet (optional)
+### 15. Add firewall rules to block access to the internet (optional, but recommended)
 ```
 sh /home/dac/free-sleep/scripts/block_internet_access.sh
 

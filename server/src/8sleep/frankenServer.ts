@@ -91,7 +91,7 @@ class FrankenServer {
   }
 
   public static async start(path: string) {
-    logger.debug(`Creating franken server on socket: ${config.firmwareConfig.dacLocation}`);
+    logger.debug(`Creating franken server on socket: ${config.dacSockPath}`);
     const unixSocketServer = await UnixSocketServer.start(path);
     return new FrankenServer(unixSocketServer);
   }
@@ -103,7 +103,7 @@ export async function getFrankenServer(): Promise<FrankenServer> {
   // If we've already started it, reuse:
   if (frankenServer) return frankenServer;
   // Otherwise, start a new instance once:
-  frankenServer = await FrankenServer.start(config.firmwareConfig.dacLocation);
+  frankenServer = await FrankenServer.start(config.dacSockPath);
   logger.debug('FrankenServer started');
   return frankenServer;
 }

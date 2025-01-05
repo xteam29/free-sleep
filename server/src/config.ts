@@ -1,24 +1,40 @@
-import { existsSync, mkdirSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync } from 'fs';
 import logger from './logger.js';
 
-type FirmwareVersion = 'pod3FirmwareReset' | 'newFirmware' | 'remoteDevMode';
+
+function checkIfDacSockPathConfigured(): string | undefined {
+  try {
+    // Check if the file exists
+    const filePath = '/home/dac/dac_sock_path.txt';
+    if (!existsSync(filePath)) {
+      logger.debug(`dac.sock path not configured, defaulting to pod 3 path...`);
+      return;
+    }
+
+    const data = readFileSync(filePath, 'utf8');
+
+    // Remove all newline characters
+    return data.replace(/\r?\n/g, '');
+  } catch (error) {
+    logger.error(error);
+  }
+}
+
+
+type FirmwareVersion = 'pod3FirmwareReset' | 'pod4FirmwareReset' | 'remoteDevMode';
 
 interface FirmwareConfig {
-  deviceCrtFileCheck: string;
   dacLocation: string;
 }
 
 const FIRMWARE_MAP: Record<FirmwareVersion, FirmwareConfig> = {
   remoteDevMode: {
-    deviceCrtFileCheck: '',
-    dacLocation: '~/free-sleep-database/dac.sock',
+    dacLocation: 'lowdb/dac.sock',
   },
   pod3FirmwareReset: {
-    deviceCrtFileCheck: '/deviceinfo/device.key',
     dacLocation: '/deviceinfo/dac.sock',
   },
-  newFirmware: {
-    deviceCrtFileCheck: '/persistent/deviceinfo/device.key',
+  pod4FirmwareReset: {
     dacLocation: '/persistent/deviceinfo/dac.sock',
   },
 };
@@ -26,15 +42,13 @@ const FIRMWARE_MAP: Record<FirmwareVersion, FirmwareConfig> = {
 
 class Config {
   private static instance: Config;
-  public firmwareVersion: FirmwareVersion;
-  public firmwareConfig: FirmwareConfig;
   public dbFolder: string;
   public remoteDevMode: boolean;
+  public dacSockPath: string;
 
   private constructor() {
     this.remoteDevMode = process.platform === 'darwin';
-    this.firmwareVersion = this.detectFirmware();
-    this.firmwareConfig = FIRMWARE_MAP[this.firmwareVersion];
+    this.dacSockPath = this.detectSockPath();
     this.dbFolder = this.remoteDevMode ? '~/free-sleep-database/' : '/home/dac/free-sleep-database/';
     this.initDBFolder();
   }
@@ -42,7 +56,7 @@ class Config {
   private initDBFolder() {
     if (!existsSync(this.dbFolder)) {
       try {
-        logger.debug(`Creating DB folder: ${this.dbFolder}`)
+        logger.debug(`Creating DB folder: ${this.dbFolder}`);
         mkdirSync(this.dbFolder, { recursive: true });
       } catch (error) {
         console.error(`Failed to create folder: ${this.dbFolder}`, error);
@@ -50,18 +64,19 @@ class Config {
     }
   }
 
-  private detectFirmware(): FirmwareVersion {
-    // On the pod 3, after the device is firmware reset, the device.crt exists at /deviceinfo/dac.sock
-    if (existsSync(FIRMWARE_MAP.pod3FirmwareReset.deviceCrtFileCheck)) {
-      return 'pod3FirmwareReset';
-    } else if (existsSync(FIRMWARE_MAP.newFirmware.deviceCrtFileCheck)) {
-      // On the pod 4 & pod 3 with latest firmware updates, the device.crt exists at /persistent/deviceinfo/dac.sock
-      return 'newFirmware';
-    }
-    if (!this.remoteDevMode) {
-      throw new Error('Error - Did not detect device firmware');
+  private detectSockPath(): string {
+    const dacSockPath = checkIfDacSockPathConfigured();
+
+    if (dacSockPath) {
+      logger.debug(`'Custom dac.sock path configured, using ${dacSockPath}`)
+      return dacSockPath;
+    } else if (!this.remoteDevMode){
+      logger.debug('No dac.sock path configured, defaulting to pod 3 path');
+      return FIRMWARE_MAP.pod3FirmwareReset.dacLocation;
+    } else if (this.remoteDevMode) {
+      return FIRMWARE_MAP.remoteDevMode.dacLocation;
     } else {
-      return 'remoteDevMode';
+      throw new Error('Error - Did not detect device firmware');
     }
   }
 

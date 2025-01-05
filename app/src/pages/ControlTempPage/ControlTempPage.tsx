@@ -9,6 +9,7 @@ import Slider from './Slider.tsx';
 import { useSettings } from '@api/settings.ts';
 import { useAppStore } from '@state/appStore.tsx';
 import { useEffect } from 'react';
+import WaterNotification from './WaterNotification.tsx';
 
 
 export default function ControlTempPage() {
@@ -22,6 +23,7 @@ export default function ControlTempPage() {
   useEffect(() => {
     refetch();
   }, [side]);
+
   return (
     <PageContainer sx={{ mt: 20 }}>
       <Slider
@@ -46,7 +48,7 @@ export default function ControlTempPage() {
       <AwayNotification
         settings={settings}
       />
-
+      <WaterNotification deviceStatus={deviceStatus}/>
     </PageContainer>
   );
 }
